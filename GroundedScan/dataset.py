@@ -1058,7 +1058,12 @@ class GroundedScan(object):
                                                    attention_weights=current_attention_weights)
         filenames = [save_location]
 
+        agent_history = []
         for i, situation in enumerate(demonstration):
+            #import pdb; pdb.set_trace();
+            #print((i, situation))
+            agent_history.append(situation.agent_pos)
+            #print(agent_history)
             if attention_weights:
                 assert len(attention_weights) >= len(demonstration), "Unequal number of attention weights and "\
                                                                      "demonstration steps."
@@ -1067,7 +1072,8 @@ class GroundedScan(object):
                 current_attention_weights = []
             self.initialize_world(situation, mission=mission)
             save_location = self._world.save_situation(os.path.join(mission_folder, 'situation_' + str(i) + '.png'),
-                                                       attention_weights=current_attention_weights)
+                                                       attention_weights=current_attention_weights,
+                                                       agent_history=agent_history)
             filenames.append(save_location)
 
         # Make a gif of the action sequence.
