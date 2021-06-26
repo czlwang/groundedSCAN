@@ -1062,7 +1062,10 @@ class GroundedScan(object):
         for i, situation in enumerate(demonstration):
             #import pdb; pdb.set_trace();
             #print((i, situation))
-            agent_history.append(situation.agent_pos)
+            pos = {"row": situation.agent_pos.row, 
+                   "column": situation.agent_pos.column,
+                   "direction": situation.agent_direction.name} 
+            agent_history.append(pos)
             #print(agent_history)
             if attention_weights:
                 assert len(attention_weights) >= len(demonstration), "Unequal number of attention weights and "\

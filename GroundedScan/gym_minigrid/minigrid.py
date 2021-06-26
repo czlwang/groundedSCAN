@@ -301,6 +301,28 @@ class Grid:
 
         return grid
 
+    def history2points(self, agent_history):
+
+        points = []
+        for p in agent_history:
+            row = p["row"]
+            col = p["column"]
+            direction = p["direction"]
+        
+            cy = CELL_PIXELS * (row + 0.5)
+            cx = CELL_PIXELS * (col + 0.5)
+
+            #import pdb; pdb.set_trace()
+            directions = {"north": (cx, cy + 12),
+                          "south": (cx, cy - 12), 
+                          "east": (cx + 12, cy), 
+                          "west": (cx - 12, cy)}
+
+
+            #r.setLineColor(255, 192, 203)
+            points.append(directions[direction])
+        return points
+
     def render(self, r, tile_size, attention_weights=[], agent_history=[]):
         """
         Render this grid at a given scale
@@ -352,13 +374,19 @@ class Grid:
 
         # Draw the agent path
         print()
-        for i, pos in enumerate(agent_history):
-            row = pos.row
-            col = pos.column
-            color = 150*(1 - (1/(1+(len(agent_history) - i))))
-            color = 255*(1 - math.exp(0.2*(i-len(agent_history))))
-            print(color)
-            r.fillRect(col * CELL_PIXELS, row * CELL_PIXELS, CELL_PIXELS, CELL_PIXELS, r=color, g=color, b=color)
+
+        points = self.history2points(agent_history)
+
+        endpoints = zip(points, points[1:])
+        #import pdb; pdb.set_trace()
+
+        #for i, pos in enumerate(agent_history):
+        #    row = pos["row"]
+        #    col = pos["column"]
+        #    color = 150*(1 - (1/(1+(len(agent_history) - i))))
+        #    color = 255*(1 - math.exp(0.2*(i-len(agent_history))))
+        #    print(color)
+        #    r.fillRect(col * CELL_PIXELS, row * CELL_PIXELS, CELL_PIXELS, CELL_PIXELS, r=color, g=color, b=color)
         
         # Draw grid lines
         r.setLineColor(100, 100, 100)
@@ -386,6 +414,12 @@ class Grid:
                 cell.render(r)
                 r.pop()
 
+        for i, e in enumerate(endpoints):
+            alpha = 255*(math.exp(0.1*(i-len(agent_history))))
+            r.setLineColor(255, 192, 203, alpha)
+            r.setLineWidth(2)
+            r.drawLine(e[0][0], e[0][1], e[1][0], e[1][1])
+            
         r.pop()
 
     def encode(self, agent_row: int, agent_column: int, agent_direction: int):
