@@ -23,7 +23,8 @@ class Window(QMainWindow):
         # Text box for the mission
         self.missionBox = QTextEdit()
         self.missionBox.setReadOnly(True)
-        self.missionBox.setMinimumSize(400, 100)
+        self.missionBox.setMinimumSize(400, 30)
+        #self.missionBox.setMaximumSize(400, 100)
 
         # Center the image
         hbox = QHBoxLayout()
@@ -40,6 +41,8 @@ class Window(QMainWindow):
         self.mainWidget = QWidget(self)
         self.setCentralWidget(self.mainWidget)
         self.mainWidget.setLayout(vbox)
+
+        self.setFixedSize(400, 450)
 
         # Show the application window
         self.show()

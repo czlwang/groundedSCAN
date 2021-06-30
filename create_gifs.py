@@ -12,7 +12,7 @@ output_directory = "/home/czw/Documents/2021/groundedSCAN/output/"
 #                                                    output_directory)
 #
 example = {}
-ex_path = "/home/czw/Documents/2021/jan_portal/data/adverb_2/660332"
+ex_path = "/home/czw/Documents/2021/jan_portal/data/adverb_2/660330"
 
 summary = ["intransitive_verbs", "transitive_verbs", "adverbs",
            "nouns", "color_adjectives", "size_adjectives",

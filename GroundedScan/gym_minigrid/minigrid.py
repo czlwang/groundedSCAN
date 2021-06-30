@@ -373,7 +373,6 @@ class Grid:
                     r.pop()
 
         # Draw the agent path
-        print()
 
         points = self.history2points(agent_history)
 
@@ -757,6 +756,7 @@ class MiniGridEnv(gym.Env):
                 self.grid_render.close()
             return
 
+
         if self.grid_render is None or self.grid_render.window is None or (self.grid_render.width != self.width * tile_size):
             from GroundedScan.gym_minigrid.rendering import Renderer
             self.grid_render = Renderer(
@@ -766,9 +766,15 @@ class MiniGridEnv(gym.Env):
             )
 
         r = self.grid_render
+        #import pdb; pdb.set_trace()
 
         if r.window:
-            r.window.setText(self.mission)
+            #r.window.setText(self.mission)
+            if len(agent_history) > 0:
+                last_pos = agent_history[-1]
+                #r.window.setStyleSheet("color: rgb(100,230,10)")
+                r.window.setStyleSheet("font-size: 20pt")
+                r.window.setText(last_pos["action"])
 
         r.beginFrame()
 

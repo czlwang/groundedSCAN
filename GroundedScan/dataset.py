@@ -1003,7 +1003,7 @@ class GroundedScan(object):
         mission = ' '.join(["Command:", ' '.join(command), "\nMeaning: ", ' '.join(meaning),
                             "\nTarget:"] + actual_target_commands)
         save_dir = self.visualize_command(situation, command, target_demonstration,
-                                          mission=mission)
+                                          mission=mission, target_commands=actual_target_commands)
         return save_dir
 
     def visualize_data_examples(self) -> List[str]:
@@ -1016,7 +1016,7 @@ class GroundedScan(object):
         return save_dirs
 
     def visualize_command(self, initial_situation: Situation, command: List[str], demonstration: List[Situation],
-                          mission: str, parent_save_dir="", attention_weights=[]) -> str:
+                          mission: str, parent_save_dir="", attention_weights=[], target_commands=[]) -> str:
         """
         :param initial_situation: (list of objects with their location, grid size, agent position)
         :param command: command in natural language
@@ -1064,7 +1064,8 @@ class GroundedScan(object):
             #print((i, situation))
             pos = {"row": situation.agent_pos.row, 
                    "column": situation.agent_pos.column,
-                   "direction": situation.agent_direction.name} 
+                   "direction": situation.agent_direction.name,
+                   "action": target_commands[i]} 
             agent_history.append(pos)
             #print(agent_history)
             if attention_weights:
@@ -1084,7 +1085,7 @@ class GroundedScan(object):
         for filename in filenames:
             images.append(imageio.imread(filename))
         movie_dir = os.path.join(self.save_directory, mission_folder)
-        imageio.mimsave(os.path.join(movie_dir, 'movie.gif'), images, fps=5)
+        imageio.mimsave(os.path.join(movie_dir, 'movie.gif'), images, fps=4)
 
         # Restore situation.
         self.initialize_world(current_situation, mission=current_mission)
