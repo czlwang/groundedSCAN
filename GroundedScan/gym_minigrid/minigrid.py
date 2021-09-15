@@ -313,8 +313,8 @@ class Grid:
             cx = CELL_PIXELS * (col + 0.5)
 
             #import pdb; pdb.set_trace()
-            directions = {"north": (cx, cy + 12),
-                          "south": (cx, cy - 12), 
+            directions = {"north": (cx, cy - 12),
+                          "south": (cx, cy + 12), 
                           "east": (cx + 12, cy), 
                           "west": (cx - 12, cy)}
 
@@ -768,13 +768,14 @@ class MiniGridEnv(gym.Env):
         r = self.grid_render
         #import pdb; pdb.set_trace()
 
-        if r.window:
-            #r.window.setText(self.mission)
-            if len(agent_history) > 0:
-                last_pos = agent_history[-1]
-                #r.window.setStyleSheet("color: rgb(100,230,10)")
-                r.window.setStyleSheet("font-size: 20pt")
-                r.window.setText(last_pos["action"])
+        if r.window and len(agent_history) > 0:
+            last_pos = agent_history[-1]
+            action = last_pos["action"]
+            style = "font-size: 20pt;" 
+            if action=="stay":
+                style += " color: rgb(255,0,0)"
+            r.window.setStyleSheet(style)
+            r.window.setText(action)
 
         r.beginFrame()
 

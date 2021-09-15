@@ -14,6 +14,7 @@ import itertools
 import logging
 from copy import deepcopy
 from xlwt import Workbook
+import pathlib
 
 logger = logging.getLogger("GroundedScan")
 
@@ -997,13 +998,14 @@ class GroundedScan(object):
                 save_dirs.append(save_dir_prediction)
         return save_dirs
 
-    def visualize_data_example(self, data_example: dict) -> str:
+    def visualize_data_example(self, data_example: dict, out_path="") -> str:
         command, meaning, derivation, situation, actual_target_commands, target_demonstration, _ = self.parse_example(
             data_example)
         mission = ' '.join(["Command:", ' '.join(command), "\nMeaning: ", ' '.join(meaning),
                             "\nTarget:"] + actual_target_commands)
         save_dir = self.visualize_command(situation, command, target_demonstration,
-                                          mission=mission, target_commands=actual_target_commands)
+                                          mission=mission, target_commands=actual_target_commands,
+                                          out_path=out_path)
         return save_dir
 
     def visualize_data_examples(self) -> List[str]:
@@ -1016,7 +1018,7 @@ class GroundedScan(object):
         return save_dirs
 
     def visualize_command(self, initial_situation: Situation, command: List[str], demonstration: List[Situation],
-                          mission: str, parent_save_dir="", attention_weights=[], target_commands=[]) -> str:
+                          mission: str, parent_save_dir="", attention_weights=[], target_commands=[], out_path="") -> str:
         """
         :param initial_situation: (list of objects with their location, grid size, agent position)
         :param command: command in natural language
@@ -1031,22 +1033,24 @@ class GroundedScan(object):
         current_mission = self._world.mission
 
         # Initialize directory with current command as its name.
-        mission_folder = '_'.join([self._vocabulary.translate_word(word) for word in command])
+        #mission_folder = '_'.join([self._vocabulary.translate_word(word) for word in command])
+        mission_folder = out_path
         if parent_save_dir:
             mission_folder = os.path.join(parent_save_dir, mission_folder)
             if not os.path.exists(os.path.join(self.save_directory, parent_save_dir)):
                 os.mkdir(os.path.join(self.save_directory, parent_save_dir))
         full_dir = os.path.join(self.save_directory, mission_folder)
         if not os.path.exists(full_dir):
-            os.mkdir(full_dir)
+            pathlib.Path(full_dir).mkdir(parents=True, exist_ok=True)
             file_count = 0
         else:
             files_list = os.listdir(full_dir)
             file_count = len(files_list)
         mission_folder = os.path.join(mission_folder, "situation_{}".format(file_count))
         final_dir = os.path.join(full_dir, "situation_{}".format(file_count))
+        #import pdb; pdb.set_trace()
         if not os.path.exists(final_dir):
-            os.mkdir(final_dir)
+            pathlib.Path(final_dir).mkdir(parents=True, exist_ok=True)
 
         # Visualize command.
         self.initialize_world(initial_situation, mission=mission)
@@ -1058,7 +1062,11 @@ class GroundedScan(object):
                                                    attention_weights=current_attention_weights)
         filenames = [save_location]
 
-        agent_history = []
+        agent_history = [{"row": initial_situation.agent_pos.row, 
+                          "column": initial_situation.agent_pos.column,
+                          "direction": initial_situation.agent_direction.name,
+                          "action": ""}]
+
         for i, situation in enumerate(demonstration):
             #import pdb; pdb.set_trace();
             #print((i, situation))
